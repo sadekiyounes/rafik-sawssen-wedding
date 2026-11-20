@@ -1,0 +1,272 @@
+import { useEffect, useState } from "react";
+import { Loader2, Minus, Plus } from "lucide-react";
+
+import type { WeddingConfig } from "@/weddings/types";
+import { supabase } from "@/integrations/supabase/client";
+import { rsvpSchema } from "@/lib/rsvp";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+import { CornerFiligree, EightPointStar } from "./ornaments";
+import { Reveal } from "./Reveal";
+import { SectionHeading, SectionShell } from "./SectionHeading";
+
+type Saved = { name: string; attending: boolean };
+
+const fieldClass =
+  "w-full rounded-none border-0 border-b border-gold/60 bg-transparent px-1 py-3 font-serif text-xl text-foreground placeholder:text-ink-soft/60 focus:border-gold-deep focus:outline-none focus:ring-0";
+
+export function RsvpSection({ wedding }: { wedding: WeddingConfig }) {
+  const storageKey = `nexeio-rsvp-${wedding.slug}`;
+  const [name, setName] = useState("");
+  const [attending, setAttending] = useState<boolean | null>(null);
+  const [guests, setGuests] = useState(1);
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
+  const [saved, setSaved] = useState<Saved | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      if (raw) setSaved(JSON.parse(raw) as Saved);
+    } catch {
+      /* ignore */
+    }
+  }, [storageKey]);
+
+  if (!wedding.rsvp.enabled) return null;
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const parsed = rsvpSchema(wedding.rsvp.maxGuests).safeParse({
+      guestName: name,
+      attending: attending ?? undefined,
+      guestCount: attending === false ? 0 : guests,
+      phone,
+      message,
+    });
+
+    if (!parsed.success) {
+      const next: Record<string, string> = {};
+      for (const issue of parsed.error.issues) {
+        const key = String(issue.path[0] ?? "form");
+        next[key] ??= issue.message;
+      }
+      setErrors(next);
+      return;
+    }
+
+    setErrors({});
+    const v = parsed.data;
+
+    const whatsappMessage = [
+      "💍 NEW WEDDING RSVP",
+      "━━━━━━━━━━━━━━",
+      `👤 Full name: ${v.guestName}`,
+      `📩 Attendance: ${v.attending ? "Joyfully accepts" : "Regretfully declines"}`,
+      `👥 Number of guests: ${v.guestCount}`,
+      `📱 Phone: ${v.phone || "Not provided"}`,
+      `💌 Message: ${v.message || "No message"}`,
+      "━━━━━━━━━━━━━━",
+      "Sent from the wedding invitation website.",
+    ].join("\n");
+
+    const whatsappUrl =
+      "https://wa.me/213792917971?text=" +
+      encodeURIComponent(whatsappMessage);
+
+    // Open WhatsApp directly from the visitor's button click.
+    const whatsappWindow = window.open(whatsappUrl, "_blank");
+    if (whatsappWindow) {
+      whatsappWindow.opener = null;
+    } else {
+      window.location.href = whatsappUrl;
+    }
+
+    // Keep the existing database integration.
+    void supabase.from("rsvps").insert({
+      wedding_slug: wedding.slug,
+      guest_name: v.guestName,
+      attending: v.attending,
+      guest_count: v.guestCount,
+      phone: v.phone ?? null,
+      message: v.message ?? null,
+    });
+
+    const record = { name: v.guestName, attending: v.attending };
+
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(record));
+    } catch {
+      /* ignore */
+    }
+
+    setSaved(record);
+    setStatus("idle");
+  };
+
+  return (
+    <SectionShell labelledBy="rsvp-title">
+      <SectionHeading eyebrow="Kindly Reply" title="RSVP" id="rsvp-title" />
+      <Reveal delay={120} className="mx-auto mt-12 max-w-lg">
+        <div className="relative border border-gold/60 bg-paper-grain px-6 py-10 shadow-paper sm:px-10">
+          <div className="pointer-events-none absolute inset-2 border border-gold/25" aria-hidden />
+          <CornerFiligree corner="tl" />
+          <CornerFiligree corner="tr" />
+          <CornerFiligree corner="bl" />
+          <CornerFiligree corner="br" />
+
+          {saved ? (
+            <div className="relative py-6 text-center" role="status">
+              <EightPointStar className="mx-auto size-8 text-gold" />
+              <p className="mt-4 font-script text-5xl text-gold-foil animate-foil">Jazakum Allahu khayran</p>
+              <p className="mt-4 font-serif text-xl text-foreground">
+                Thank you, {saved.name}.{" "}
+                {saved.attending
+                  ? "We are overjoyed you will celebrate with us."
+                  : "You will be missed — we are grateful for your duas."}
+              </p>
+              <Button variant="ivory" size="sm" className="mt-8" onClick={() => setSaved(null)}>
+                Send another reply
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={submit} noValidate className="relative space-y-7">
+              <p className="text-center font-serif text-lg italic text-ink-soft">
+                Kindly reply by {wedding.rsvp.deadline}
+              </p>
+
+              <div>
+                <label htmlFor="rsvp-name" className="font-display text-[0.6rem] font-feature-display text-gold-deep">
+                  Full name
+                </label>
+                <input
+                  id="rsvp-name"
+                  className={fieldClass}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  autoComplete="name"
+                  maxLength={120}
+                  placeholder="Your name"
+                  aria-invalid={Boolean(errors["guestName"])}
+                />
+                {errors["guestName"] && <p className="mt-1 text-sm text-destructive">{errors["guestName"]}</p>}
+              </div>
+
+              <fieldset>
+                <legend className="font-display text-[0.6rem] font-feature-display text-gold-deep">
+                  Will you attend?
+                </legend>
+                <div className="mt-3 grid grid-cols-2 gap-3" role="radiogroup">
+                  {(
+                    [
+                      [true, "Joyfully accepts"],
+                      [false, "Regretfully declines"],
+                    ] as const
+                  ).map(([value, label]) => (
+                    <button
+                      key={label}
+                      type="button"
+                      role="radio"
+                      aria-checked={attending === value}
+                      onClick={() => setAttending(value)}
+                      className={cn(
+                        "min-h-14 cursor-pointer border px-3 py-3 font-serif text-lg transition-colors",
+                        attending === value
+                          ? "border-gold-deep bg-gold-foil text-primary-foreground shadow-soft"
+                          : "border-gold/50 bg-paper/60 text-foreground",
+                      )}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                {errors["attending"] && <p className="mt-1 text-sm text-destructive">{errors["attending"]}</p>}
+              </fieldset>
+
+              {attending !== false && (
+                <div>
+                  <p id="rsvp-guests-label" className="font-display text-[0.6rem] font-feature-display text-gold-deep">
+                    Number of guests
+                  </p>
+                  <div className="mt-3 flex items-center justify-center gap-6" aria-labelledby="rsvp-guests-label">
+                    <button
+                      type="button"
+                      onClick={() => setGuests((g) => Math.max(1, g - 1))}
+                      disabled={guests <= 1}
+                      aria-label="Fewer guests"
+                      className="flex size-11 cursor-pointer items-center justify-center rounded-full border border-gold/60 text-gold-deep disabled:opacity-40"
+                    >
+                      <Minus className="size-4" />
+                    </button>
+                    <span className="w-12 text-center font-serif text-4xl nums-lining text-foreground" aria-live="polite">
+                      {guests}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setGuests((g) => Math.min(wedding.rsvp.maxGuests, g + 1))}
+                      disabled={guests >= wedding.rsvp.maxGuests}
+                      aria-label="More guests"
+                      className="flex size-11 cursor-pointer items-center justify-center rounded-full border border-gold/60 text-gold-deep disabled:opacity-40"
+                    >
+                      <Plus className="size-4" />
+                    </button>
+                  </div>
+                  {errors["guestCount"] && <p className="mt-1 text-center text-sm text-destructive">{errors["guestCount"]}</p>}
+                </div>
+              )}
+
+              <div>
+                <label htmlFor="rsvp-phone" className="font-display text-[0.6rem] font-feature-display text-gold-deep">
+                  Phone (optional)
+                </label>
+                <input
+                  id="rsvp-phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  className={fieldClass}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  maxLength={40}
+                  placeholder="+213 …"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="rsvp-message" className="font-display text-[0.6rem] font-feature-display text-gold-deep">
+                  A message for the couple (optional)
+                </label>
+                <textarea
+                  id="rsvp-message"
+                  rows={3}
+                  className={cn(fieldClass, "resize-none")}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  maxLength={1000}
+                  placeholder="Your duas and wishes"
+                />
+              </div>
+
+              {status === "error" && (
+                <p className="text-center text-sm text-destructive" role="alert">
+                  We couldn't send your reply. Please check your connection and try again.
+                </p>
+              )}
+
+              <div className="flex justify-center pt-2">
+                <Button type="submit" variant="gold" size="xl" disabled={status === "sending"} className="min-w-52">
+                  {status === "sending" ? <Loader2 className="animate-spin" aria-hidden /> : null}
+                  {status === "sending" ? "Sending" : "Send reply"}
+                </Button>
+              </div>
+            </form>
+          )}
+        </div>
+      </Reveal>
+    </SectionShell>
+  );
+}

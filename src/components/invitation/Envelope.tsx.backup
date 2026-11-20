@@ -1,0 +1,293 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import sealAsset from "@/assets/brand/wax-seal.webp.asset.json";
+import flowersAsset from "@/assets/brand/white-flowers.webp.asset.json";
+import type { WeddingConfig } from "@/weddings/types";
+import { getDateParts } from "@/lib/wedding-time";
+import { cn } from "@/lib/utils";
+
+import { CornerFiligree, FloralEmboss, GoldDivider } from "./ornaments";
+import { Particles } from "./Particles";
+
+type Phase = "idle" | "opening" | "revealing" | "done";
+type Mode = "manual" | "auto";
+
+const TIMINGS = { reveal: 3000, done: 4300, unmount: 5300 };
+const REDUCED_TIMINGS = { reveal: 250, done: 600, unmount: 1100 };
+
+export function Envelope({
+  wedding,
+  onInteract,
+  onOpened,
+  onFinished,
+}: {
+  wedding: WeddingConfig;
+  /** Called on the guest's first gesture, so music may start. */
+  onInteract: () => void;
+  /** Called when the invitation underneath should start its entrance. */
+  onOpened: () => void;
+  /** Called when the envelope overlay can be removed. */
+  onFinished: () => void;
+}) {
+  const [phase, setPhase] = useState<Phase>("idle");
+  const [mode, setMode] = useState<Mode>("manual");
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
+  const phaseRef = useRef<Phase>("idle");
+  const timers = useRef<number[]>([]);
+
+  const date = getDateParts(wedding.dateTime, wedding.locale, wedding.timeZone);
+
+  const clearTimers = () => {
+    timers.current.forEach((t) => window.clearTimeout(t));
+    timers.current = [];
+  };
+
+  const open = useCallback(() => {
+    if (phaseRef.current !== "idle") return;
+    clearTimers();
+    setSecondsLeft(null);
+    onInteract();
+    phaseRef.current = "opening";
+    setPhase("opening");
+    if ("vibrate" in navigator) navigator.vibrate?.(12);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const t = reduced ? REDUCED_TIMINGS : TIMINGS;
+    timers.current.push(
+      window.setTimeout(() => {
+        phaseRef.current = "revealing";
+        setPhase("revealing");
+      }, t.reveal),
+      window.setTimeout(() => {
+        phaseRef.current = "done";
+        setPhase("done");
+        onOpened();
+      }, t.done),
+      window.setTimeout(onFinished, t.unmount),
+    );
+  }, [onInteract, onOpened, onFinished]);
+
+  // Automatic opening countdown, only after the guest chooses it.
+  useEffect(() => {
+    if (mode !== "auto" || phaseRef.current !== "idle") return;
+    const total = Math.max(1, Math.round(wedding.envelope.autoOpenDelayMs / 1000));
+    setSecondsLeft(total);
+    const started = Date.now();
+    const id = window.setInterval(() => {
+      const left = total - Math.floor((Date.now() - started) / 1000);
+      if (left <= 0) {
+        window.clearInterval(id);
+        open();
+      } else setSecondsLeft(left);
+    }, 200);
+    return () => window.clearInterval(id);
+  }, [mode, open, wedding.envelope.autoOpenDelayMs]);
+
+  useEffect(() => clearTimers, []);
+
+  const chooseAuto = () => {
+    onInteract();
+    setMode("auto");
+  };
+  const chooseManual = () => {
+    setMode("manual");
+    setSecondsLeft(null);
+  };
+
+  const envState = phase === "idle" ? "closed" : phase === "opening" ? "opening" : "revealing";
+
+  return (
+    <div
+      className="overlay-exit fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-paper-grain"
+      data-phase={phase}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${wedding.envelope.eyebrow}: ${wedding.bride.name} & ${wedding.groom.name}`}
+    >
+      <div className="absolute inset-0 bg-islamic-pattern opacity-50" aria-hidden />
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_45%,transparent_35%,color-mix(in_oklab,var(--gold-deep)_18%,transparent)_100%)]"
+        aria-hidden
+      />
+      <img
+        src={flowersAsset.url}
+        alt=""
+        aria-hidden
+        width={1400}
+        height={700}
+        className="flower-sway pointer-events-none absolute -left-24 -top-10 w-[150vw] max-w-[760px] rotate-[168deg] opacity-90 mix-blend-multiply [mask-image:radial-gradient(ellipse_at_center,black_45%,transparent_72%)]"
+      />
+      <img
+        src={flowersAsset.url}
+        alt=""
+        aria-hidden
+        width={1400}
+        height={700}
+        className="flower-sway pointer-events-none absolute -bottom-12 -right-24 w-[150vw] max-w-[760px] -rotate-6 opacity-90 mix-blend-multiply [mask-image:radial-gradient(ellipse_at_center,black_45%,transparent_72%)]"
+      />
+      <Particles count={14} />
+
+      <div
+        className={cn(
+          "relative z-10 flex flex-col items-center px-6 text-center transition-opacity duration-700",
+          phase !== "idle" && "opacity-0",
+        )}
+      >
+        <p className="font-display text-[0.68rem] font-feature-display text-gold-deep">{wedding.envelope.eyebrow}</p>
+        <p className="mt-3 font-script text-5xl leading-none text-gold-foil animate-foil sm:text-6xl">
+          {wedding.bride.name} <span className="text-4xl">&</span> {wedding.groom.name}
+        </p>
+        <GoldDivider className="mt-4" />
+      </div>
+
+      {/* 3D envelope */}
+      <div
+        className="envelope-stage relative z-10 mt-10 cursor-pointer select-none"
+        onClick={open}
+        aria-hidden={phase !== "idle"}
+      >
+        <div className="envelope" data-state={envState}>
+          <div className="envelope-shadow" />
+
+          <div className="envelope-face envelope-back">
+            <div className="envelope-liner bg-islamic-pattern" />
+          </div>
+
+          {/* invitation card that rises out */}
+          <div className="envelope-card overflow-hidden bg-paper-grain">
+            <div className="absolute inset-[6px] border border-gold/70" />
+            <div className="absolute inset-[10px] border border-gold/30" />
+            <CornerFiligree corner="tl" className="size-6" />
+            <CornerFiligree corner="tr" className="size-6" />
+            <CornerFiligree corner="bl" className="size-6" />
+            <CornerFiligree corner="br" className="size-6" />
+            <div className="relative flex h-full flex-col items-center justify-center gap-1 px-4 text-center">
+              <p dir="rtl" lang="ar" className="font-arabic text-sm text-gold-deep">
+                {wedding.nikah.bismillah}
+              </p>
+              <p className="font-script text-4xl leading-tight text-gold-foil animate-foil">{wedding.monogram}</p>
+              <p className="font-display text-[0.55rem] font-feature-display text-ink-soft">{date.long}</p>
+            </div>
+          </div>
+
+          {/* front pocket: three layered paper flaps */}
+          <div className="envelope-pocket">
+            <div className="pocket-left" />
+            <div className="pocket-right" />
+            <div className="pocket-bottom">
+              <FloralEmboss className="absolute bottom-[6%] left-1/2 w-[46%] -translate-x-1/2 opacity-90" />
+            </div>
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full" aria-hidden>
+              <polyline
+                points="0.5,99.5 50,46 99.5,99.5"
+                fill="none"
+                stroke="var(--gold)"
+                strokeWidth="1.2"
+                vectorEffect="non-scaling-stroke"
+              />
+              <rect
+                x="0.5"
+                y="0.5"
+                width="99"
+                height="99"
+                rx="1.5"
+                fill="none"
+                stroke="var(--gold)"
+                strokeOpacity="0.55"
+                strokeWidth="1"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
+          </div>
+
+          {/* top flap */}
+          <div className="envelope-flap">
+            <div className="flap-face flap-front">
+              <FloralEmboss className="absolute left-1/2 top-[10%] w-[40%] -translate-x-1/2 rotate-180 opacity-90" />
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full" aria-hidden>
+                <polyline
+                  points="1,1 50,98 99,1"
+                  fill="none"
+                  stroke="var(--gold)"
+                  strokeWidth="1.4"
+                  vectorEffect="non-scaling-stroke"
+                />
+                <polyline
+                  points="7,1 50,88 93,1"
+                  fill="none"
+                  stroke="var(--gold)"
+                  strokeOpacity="0.5"
+                  strokeWidth="0.8"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+            </div>
+            <div className="flap-face flap-back bg-islamic-pattern" />
+          </div>
+
+          <button
+            type="button"
+            className="envelope-seal"
+            onClick={(e) => {
+              e.stopPropagation();
+              open();
+            }}
+            aria-label="Break the seal and open the invitation"
+          >
+            <img
+              src={sealAsset.url}
+              alt=""
+              width={394}
+              height={420}
+              className="size-full object-contain drop-shadow-[0_6px_8px_color-mix(in_oklab,var(--gold-deep)_55%,transparent)]"
+              draggable={false}
+            />
+          </button>
+        </div>
+      </div>
+
+      {/* opening controls */}
+      <div
+        className={cn(
+          "relative z-10 mt-12 flex flex-col items-center gap-4 px-6 transition-opacity duration-500",
+          phase !== "idle" && "pointer-events-none opacity-0",
+        )}
+      >
+        <p className="font-serif text-lg italic text-ink-soft" aria-live="polite">
+          {secondsLeft !== null ? `Opening in ${secondsLeft}…` : wedding.envelope.hint}
+        </p>
+        <div
+          role="radiogroup"
+          aria-label="How would you like to open the invitation?"
+          className="flex rounded-full border border-gold/50 bg-paper/70 p-1 backdrop-blur-sm"
+        >
+          {(
+            [
+              ["manual", "Open by hand"],
+              ["auto", "Open automatically"],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={mode === value}
+              onClick={value === "auto" ? chooseAuto : chooseManual}
+              className={cn(
+                "min-h-11 cursor-pointer rounded-full px-4 font-display text-[0.6rem] font-feature-display transition-colors",
+                mode === value ? "bg-gold-foil text-primary-foreground shadow-soft" : "text-gold-deep",
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* golden veil for the cinematic hand-off */}
+      <div
+        className="envelope-veil pointer-events-none absolute inset-0 z-20 bg-[radial-gradient(circle_at_50%_45%,var(--paper)_0%,var(--gold-light)_45%,var(--background)_75%)]"
+        aria-hidden
+      />
+    </div>
+  );
+}
