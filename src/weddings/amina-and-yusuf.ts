@@ -4,7 +4,7 @@ import type { WeddingConfig } from "./types";
 
 /** Demo invitation. Duplicate this file to create a new wedding, then register it in index.ts. */
 export const aminaAndYusuf: WeddingConfig = {
-  slug: "amina-and-yusuf",
+  slug: "sawssen-and-rafik",
   locale: "en-GB",
   timeZone: "Africa/Algiers",
 
@@ -18,7 +18,7 @@ export const aminaAndYusuf: WeddingConfig = {
     fullName: "Rafik",
     parentsLine: "Son of Mr............",
   },
-  monogram: "Rafik & Sawssen",
+  monogram: "Sawssen & Rafik",
 
   envelope: {
     eyebrow: "You are invited",
@@ -36,8 +36,7 @@ export const aminaAndYusuf: WeddingConfig = {
     },
   },
 
-  dateTime: "2027-06-12T16:00:00+01:00",
-  hijriDate: "7 Muharram 1449 AH",
+  dateTime: "2027-03-08T16:00:00+01:00",
 
   scratch: {
     title: "Save the Date",
@@ -129,9 +128,9 @@ export const aminaAndYusuf: WeddingConfig = {
   },
 
   seo: {
-    title: "Wedding Invitation | Rafik & Sawssen",
+    title: "Wedding Invitation | Sawssen & Rafik",
     description:
-      "You are warmly invited to the Nikah and wedding celebration of Rafik & Sawssen on 12 June 2027 in Algiers.",
+      "You are warmly invited to the Nikah and wedding celebration of Sawssen & Rafik on 8 March 2027 in Algiers.",
   },
 
   theme: {
