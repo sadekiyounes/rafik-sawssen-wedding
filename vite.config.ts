@@ -16,7 +16,7 @@ export default defineConfig({
         path: "/invite/sawssen-and-rafik",
         prerender: {
           enabled: true,
-          outputPath: "/invite/amina-and-yusuf/index.html",
+          outputPath: "/invite/sawssen-and-rafik/index.html",
         },
       },
     ],
