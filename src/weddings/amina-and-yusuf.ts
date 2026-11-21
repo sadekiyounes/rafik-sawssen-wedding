@@ -1,4 +1,5 @@
-﻿import type { WeddingConfig } from "./types";
+﻿import { assetUrl } from "@/utils/assetUrl";
+import type { WeddingConfig } from "./types";
 
 
 /** Demo invitation. Duplicate this file to create a new wedding, then register it in index.ts. */
@@ -28,7 +29,7 @@ export const aminaAndYusuf: WeddingConfig = {
   hero: {
     eyebrow: "The Wedding of",
     image: {
-      src: "/images/v1.jpg",
+      src: assetUrl("/images/v1.jpg"),
       alt: "A white marble mosque glowing at golden hour",
       width: 1024,
       height: 1536,
@@ -99,15 +100,15 @@ export const aminaAndYusuf: WeddingConfig = {
   },
 
   gallery: [
-    { src: "/images/1.jpg", alt: "Wedding photograph 1", width: 768, height: 960 },
-    { src: "/images/2.jpg", alt: "Wedding photograph 2", width: 768, height: 960 },
-    { src: "/images/3.jpg", alt: "Wedding photograph 3", width: 768, height: 960 },
-    { src: "/images/4.jpg", alt: "Wedding photograph 4", width: 768, height: 960 },
-    { src: "/images/5.jpg", alt: "Wedding photograph 5", width: 768, height: 960 },
+    { src: assetUrl("/images/1.jpg"), alt: "Wedding photograph 1", width: 768, height: 960 },
+    { src: assetUrl("/images/2.jpg"), alt: "Wedding photograph 2", width: 768, height: 960 },
+    { src: assetUrl("/images/3.jpg"), alt: "Wedding photograph 3", width: 768, height: 960 },
+    { src: assetUrl("/images/4.jpg"), alt: "Wedding photograph 4", width: 768, height: 960 },
+    { src: assetUrl("/images/5.jpg"), alt: "Wedding photograph 5", width: 768, height: 960 },
   ],
 
   music: {
-    src: "/music/wedding.mp3",
+    src: assetUrl("/music/wedding.mp3"),
     title: "Nikah Ambience",
   },
 
@@ -140,6 +141,7 @@ export const aminaAndYusuf: WeddingConfig = {
     ink: "#3B2E22",
   },
 };
+
 
 
 

@@ -1,3 +1,4 @@
+﻿import { assetUrl } from "@/utils/assetUrl";
 
 import { useEffect, useRef, useState } from "react";
 import type { WeddingConfig } from "@/weddings/types";
@@ -47,7 +48,7 @@ export function Envelope({
       aria-label={`${wedding.bride.name} & ${wedding.groom.name} wedding invitation`}
     >
       <video
-        src="/videos/Envelope_opening_with_golden_light_202607270136_(2)_3609a468.mp4"
+        src={assetUrl("/videos/Envelope_opening_with_golden_light_202607270136_(2)_3609a468.mp4")}
         autoPlay
         muted
         playsInline
@@ -63,3 +64,4 @@ export function Envelope({
     </div>
   );
 }
+

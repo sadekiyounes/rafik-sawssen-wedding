@@ -1,11 +1,24 @@
-
-import { defineConfig } from "@lovable.dev/vite-tanstack-config";
-import netlify from "@netlify/vite-plugin-tanstack-start";
+﻿import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  base: "/rafik-sawssen-wedding/",
   nitro: false,
-  plugins: [netlify()],
   tanstackStart: {
     server: { entry: "server" },
+    prerender: {
+      enabled: true,
+      crawlLinks: false,
+      autoStaticPathsDiscovery: false,
+      failOnError: true,
+    },
+    pages: [
+      {
+        path: "/invite/amina-and-yusuf",
+        prerender: {
+          enabled: true,
+          outputPath: "/invite/amina-and-yusuf/index.html",
+        },
+      },
+    ],
   },
 });

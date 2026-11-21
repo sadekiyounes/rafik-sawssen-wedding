@@ -1,3 +1,4 @@
+﻿import { assetUrl } from "@/utils/assetUrl";
 import type { WeddingConfig } from "@/weddings/types";
 import { getDateParts } from "@/lib/wedding-time";
 
@@ -58,7 +59,7 @@ export function HeroSection({ wedding, opened }: { wedding: WeddingConfig; opene
           />
 
           <img
-            src="/images/f1.png"
+            src={assetUrl("/images/f1.png")}
             alt=""
             aria-hidden
             width={1400}
@@ -103,4 +104,5 @@ export function HeroSection({ wedding, opened }: { wedding: WeddingConfig; opene
     </section>
   );
 }
+
 

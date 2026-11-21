@@ -1,3 +1,4 @@
+﻿import { assetUrl } from "@/utils/assetUrl";
 import type { WeddingConfig } from "@/weddings/types";
 
 import { ArchFrame, GoldDivider } from "./ornaments";
@@ -26,7 +27,7 @@ export function ClosingSection({ wedding }: { wedding: WeddingConfig }) {
           </div>
         </div>
         <img
-          src="/images/f1.png"
+          src={assetUrl("/images/f1.png")}
           alt=""
           aria-hidden
           width={1400}
@@ -42,4 +43,5 @@ export function ClosingSection({ wedding }: { wedding: WeddingConfig }) {
     </footer>
   );
 }
+
 
