@@ -13,7 +13,7 @@ export default defineConfig({
     },
     pages: [
       {
-        path: "/invite/amina-and-yusuf",
+        path: "/invite/sawssen-and-rafik",
         prerender: {
           enabled: true,
           outputPath: "/invite/amina-and-yusuf/index.html",
