@@ -1,16 +1,28 @@
 ﻿import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
-  base: "/rafik-sawssen-wedding/",
   nitro: false,
+
+  vite: {
+    base: "/rafik-sawssen-wedding/",
+  },
+
   tanstackStart: {
-    server: { entry: "server" },
+    server: {
+      entry: "server",
+    },
+
+    router: {
+      basepath: "/rafik-sawssen-wedding",
+    },
+
     prerender: {
       enabled: true,
       crawlLinks: false,
       autoStaticPathsDiscovery: false,
       failOnError: true,
     },
+
     pages: [
       {
         path: "/invite/sawssen-and-rafik",

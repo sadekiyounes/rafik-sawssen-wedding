@@ -16,16 +16,28 @@ export function NikahSection({ wedding }: { wedding: WeddingConfig }) {
           <CornerFiligree corner="bl" />
           <CornerFiligree corner="br" />
 
-          <p dir="rtl" lang="ar" className="font-arabic text-3xl leading-relaxed text-gold-deep sm:text-4xl">
+          <p
+            dir="rtl"
+            lang="ar"
+            className="font-arabic text-3xl leading-relaxed text-gold-deep sm:text-4xl"
+          >
             {nikah.bismillah}
           </p>
           <GoldDivider className="mt-5" />
 
-          <p dir="rtl" lang="ar" className="mt-8 font-arabic text-xl leading-loose text-foreground sm:text-2xl">
+          <p
+            dir="rtl"
+            lang="ar"
+            className="mt-8 font-arabic text-xl leading-loose text-foreground sm:text-2xl"
+          >
             {nikah.verse.arabic}
           </p>
-          <p className="mt-4 font-serif text-lg italic leading-relaxed text-ink-soft">“{nikah.verse.translation}”</p>
-          <p className="mt-2 font-display text-[0.6rem] font-feature-display text-gold-deep">{nikah.verse.reference}</p>
+          <p className="mt-4 font-serif text-lg italic leading-relaxed text-ink-soft">
+            “{nikah.verse.translation}”
+          </p>
+          <p className="mt-2 font-display text-[0.6rem] font-feature-display text-gold-deep">
+            {nikah.verse.reference}
+          </p>
 
           <h2 id="nikah-title" className="sr-only">
             Nikah invitation
@@ -36,9 +48,17 @@ export function NikahSection({ wedding }: { wedding: WeddingConfig }) {
 
           <div className="mt-10 grid gap-8 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-6">
             <div>
-              <p className="font-script text-5xl leading-tight text-gold-foil animate-foil">{bride.name}</p>
-              <p className="mt-1 font-display text-[0.62rem] font-feature-display text-foreground">{bride.fullName}</p>
-              <p className="mt-2 font-serif text-base italic text-ink-soft">{bride.parentsLine}</p>
+              <p className="font-script text-5xl leading-tight text-gold-foil animate-foil">
+                {bride.name}
+              </p>
+              <p className="mt-1 font-display text-[0.62rem] font-feature-display text-foreground">
+                {bride.fullName}
+              </p>
+              {bride.parentsLine && (
+                <p className="mt-2 font-serif text-base italic text-ink-soft">
+                  {bride.parentsLine}
+                </p>
+              )}
             </div>
             <div className="flex items-center justify-center gap-3 text-gold">
               <span className="h-px w-10 bg-gold/60 sm:hidden" />
@@ -46,13 +66,23 @@ export function NikahSection({ wedding }: { wedding: WeddingConfig }) {
               <span className="h-px w-10 bg-gold/60 sm:hidden" />
             </div>
             <div>
-              <p className="font-script text-5xl leading-tight text-gold-foil animate-foil">{groom.name}</p>
-              <p className="mt-1 font-display text-[0.62rem] font-feature-display text-foreground">{groom.fullName}</p>
-              <p className="mt-2 font-serif text-base italic text-ink-soft">{groom.parentsLine}</p>
+              <p className="font-script text-5xl leading-tight text-gold-foil animate-foil">
+                {groom.name}
+              </p>
+              <p className="mt-1 font-display text-[0.62rem] font-feature-display text-foreground">
+                {groom.fullName}
+              </p>
+              {groom.parentsLine && (
+                <p className="mt-2 font-serif text-base italic text-ink-soft">
+                  {groom.parentsLine}
+                </p>
+              )}
             </div>
           </div>
 
-          <p className="mx-auto mt-10 max-w-sm font-serif text-lg italic text-ink-soft">{nikah.closingLine}</p>
+          <p className="mx-auto mt-10 max-w-sm font-serif text-lg italic text-ink-soft">
+            {nikah.closingLine}
+          </p>
         </div>
       </Reveal>
     </section>

@@ -13,12 +13,12 @@ export interface ImageAsset {
 }
 
 export interface PersonDetails {
-  /** Short name shown in calligraphy, e.g. "Amina". */
+  /** Short name shown in calligraphy, e.g. "Sawssen". */
   name: string;
   /** Full name used in the formal Nikah wording. */
   fullName: string;
   /** e.g. "Daughter of Mr. & Mrs. Karim Benali". */
-  parentsLine: string;
+  parentsLine?: string;
 }
 
 export interface WeddingTheme {

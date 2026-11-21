@@ -1,5 +1,5 @@
 import type { WeddingConfig } from "./types";
-import { aminaAndYusuf } from "./amina-and-yusuf";
+import { sawssenAndRafik } from "./sawssen-and-rafik";
 
 export type { WeddingConfig } from "./types";
 
@@ -7,11 +7,11 @@ export type { WeddingConfig } from "./types";
  * Registry of every published invitation, keyed by URL slug.
  * Add a new wedding by creating a config file next to this one and listing it here.
  */
-const registry: WeddingConfig[] = [aminaAndYusuf];
+const registry: WeddingConfig[] = [sawssenAndRafik];
 
 const bySlug = new Map(registry.map((w) => [w.slug, w]));
 
-export const DEMO_WEDDING_SLUG = aminaAndYusuf.slug;
+export const DEMO_WEDDING_SLUG = sawssenAndRafik.slug;
 
 export function getWedding(slug: string): WeddingConfig | undefined {
   return bySlug.get(slug.toLowerCase());

@@ -1,10 +1,10 @@
-# Pixel Faithful Blueprint
+# Sawssen & Rafik Wedding Invitation
 
-Implement exactly the screenshot and nothing else
+An interactive wedding invitation for Sawssen and Rafik.
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://pixel-faithful-blueprint-33.lovable.app
+**Live invitation**: https://sadekiyounes.github.io/rafik-sawssen-wedding/invite/sawssen-and-rafik/
 
 ## Build with Lovable
 

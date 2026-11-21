@@ -6,7 +6,9 @@ import { getWedding } from "@/weddings";
 
 describe("wedding registry", () => {
   it("finds the demo invitation by its URL slug", () => {
-    expect(getWedding("amina-and-yusuf")?.bride.name).toBe("Amina");
+    const wedding = getWedding("sawssen-and-rafik");
+    expect(wedding?.bride.name).toBe("Sawssen");
+    expect(wedding?.groom.name).toBe("Rafik");
   });
   it("returns nothing for an unknown slug", () => {
     expect(getWedding("no-such-wedding")).toBeUndefined();
@@ -33,12 +35,18 @@ describe("countdown", () => {
 describe("RSVP rules", () => {
   const schema = rsvpSchema(6);
   it("rejects more guests than the invitation allows", () => {
-    expect(schema.safeParse({ guestName: "Sara", attending: true, guestCount: 7 }).success).toBe(false);
+    expect(schema.safeParse({ guestName: "Sara", attending: true, guestCount: 7 }).success).toBe(
+      false,
+    );
   });
   it("requires at least one guest when attending", () => {
-    expect(schema.safeParse({ guestName: "Sara", attending: true, guestCount: 0 }).success).toBe(false);
+    expect(schema.safeParse({ guestName: "Sara", attending: true, guestCount: 0 }).success).toBe(
+      false,
+    );
   });
   it("accepts a decline with zero guests", () => {
-    expect(schema.safeParse({ guestName: "Sara", attending: false, guestCount: 0 }).success).toBe(true);
+    expect(schema.safeParse({ guestName: "Sara", attending: false, guestCount: 0 }).success).toBe(
+      true,
+    );
   });
 });
