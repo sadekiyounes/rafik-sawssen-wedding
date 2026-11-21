@@ -1,10 +1,10 @@
-﻿import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
   nitro: false,
 
   vite: {
-    base: "/rafik-sawssen-wedding/",
+    base: "/",
   },
 
   tanstackStart: {
@@ -13,7 +13,7 @@ export default defineConfig({
     },
 
     router: {
-      basepath: "/rafik-sawssen-wedding",
+      basepath: "/",
     },
 
     prerender: {

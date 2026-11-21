@@ -1,5 +1,5 @@
-﻿export const GITHUB_BASE = "/rafik-sawssen-wedding/";
+export const SITE_BASE = "/";
 
 export function assetUrl(path: string): string {
-  return GITHUB_BASE + path.replace(/^\/+/, "");
+  return SITE_BASE + path.replace(/^\/+/, "");
 }

@@ -4,7 +4,7 @@ An interactive wedding invitation for Sawssen and Rafik.
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live invitation**: https://sadekiyounes.github.io/rafik-sawssen-wedding/invite/sawssen-and-rafik/
+**Live invitation**: https://invite.nexeio.com/invite/sawssen-and-rafik/
 
 ## Build with Lovable
 

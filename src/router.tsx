@@ -7,7 +7,7 @@ export const getRouter = () => {
 
   const router = createRouter({
     routeTree,
-    basepath: "/rafik-sawssen-wedding",
+    basepath: "/",
     context: { queryClient },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
