@@ -74,17 +74,17 @@ export function HeroSection({ wedding, opened }: { wedding: WeddingConfig; opene
           </span>
           <span
             aria-hidden
-            className="hero-in font-script font-normal text-[clamp(3.4rem,15vw,5.5rem)] leading-[1.05] text-gold-foil animate-foil"
+            className="hero-in font-script font-normal text-[clamp(2.8rem,12vw,4.5rem)] leading-[1.05] text-gold-foil animate-foil"
             style={{ "--d": "800ms" } as React.CSSProperties}
           >
             {wedding.bride.name}
-            <span className="mx-3 align-middle font-serif text-[0.45em] italic text-gold-deep">&</span>
+            <span className="mx-2 align-middle font-serif text-[0.45em] italic text-gold-deep">&</span>
             {wedding.groom.name}
           </span>
         </h1>
 
         <p
-          className="hero-in mt-3 font-display text-[0.7rem] font-feature-display text-ink-soft"
+          className="hero-in mt-3 w-full whitespace-nowrap text-center font-display text-[0.58rem] font-feature-display text-ink-soft"
           style={{ "--d": "1100ms" } as React.CSSProperties}
         >
           YOU ARE INVITED TO A MARRIAGE CEREMONY
